@@ -15,7 +15,7 @@ Student Score Table
 
 - Start the server.js api:
 - `$ node server.js`
-- Start this gulp task:
+- Start gulp task:
 - `$ gulp`
 
 ## Gulp Tasks:
