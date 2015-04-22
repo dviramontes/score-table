@@ -3,7 +3,7 @@ var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var FileStore = require('nedb');
 
-var db = new FileStore({filename: './data.flat', autoload: true});
+var db = new FileStore({filename: './notes.flat', autoload: true});
 
 var app = express();
 var jsonParser = bodyParser.json();
@@ -12,38 +12,52 @@ var cors = require('cors');
 app.use(morgan('combined'));
 app.use(cors());
 
-var insertDoc = function (criteria, callback) {
-	db.insert(criteria, function (err) {
-		if (err) {
-			callback(err);
-		} else {
-			callback('user created');
-		}
-	});
-};
 
-var findAll = function (callback) {
+app.get('/api/notes/:id', function (req, res, next) {
+	if (req.params.id) {
+		db.findOne({'_id': req.params.id}, function (err, doc) {
+			if (!err) res.json(doc);
+		});
+	} else {
+		next();
+	}
+});
+
+app.get('/api/notes', function (req, res, next) {
+	var query = req.query.query;
+	console.log(query);
+	if(req.query.query){
+		db.find({'body': query }, function (err, doc) {
+			if (!err && doc !== null){
+				res.json(doc);
+			} else{
+				res.sendStatus(404);
+			}
+		});
+	}else{
+		next();
+	}
+});
+
+
+app.get('/api/notes', function (req, res) {
 	db.find({}, function (err, docs) { // find all
-		if (!err) callback(docs);
+		if (!err) res.json(docs);
 	});
-};
+});
 
-app.post('/api/post', jsonParser, function (req, res) {
+app.post('/api/notes', jsonParser, function (req, res) {
 	if (req.body) {
-		var criteria = req.body.student;
+		var criteria = req.body;
 		db.findOne({
-			fname: criteria.fname,
-			lname: criteria.lname
+			body: criteria.body
 		}, function (err, doc) {
 			if (err || doc == null) {
-				insertDoc(criteria, function (response) {
-					console.log(response);
-					findAll(function (all) {
-						res.json(all);
-					});
-				})
+				db.insert(criteria, function (err, doc) {
+					if (!err) res.json(doc);
+				});
 			} else {
-				res.end('student record found, not posting, try clicking on the record itself to modify it');
+				res.end('note found, not posting');
 			}
 		});
 	} else {
@@ -51,27 +65,10 @@ app.post('/api/post', jsonParser, function (req, res) {
 	}
 });
 
-app.get('/api/getlist', function (req, res) {
-	findAll(function (all) {
-		res.json(all);
-	});
-});
-
-app.put('/api/update', jsonParser, function (req, res) {
-	var data = req.body.data;
-	var key  = req.body.type;
-	db.findOne({'_id': req.body.id}, function (err, doc) {
-		doc[key] = data;
-		db.update({'_id': req.body.id}, doc, {}, function (err, numReplaced) {
-			res.sendStatus(200);
-		});
-	});
-});
-
-// start server after file.flat is loaded
+// start server after flat file is loaded
 db.loadDatabase(function (err) {
 	if (err) throw err;
-	console.log('nedb laoded!!!')
+	console.log('nedb loaded!!!')
 	app.listen(4000);
 });
 
