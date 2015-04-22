@@ -12,7 +12,6 @@ var cors = require('cors');
 app.use(morgan('combined'));
 app.use(cors());
 
-
 app.get('/api/notes/:id', function (req, res, next) {
 	if (req.params.id) {
 		db.findOne({'_id': req.params.id}, function (err, doc) {
@@ -25,15 +24,15 @@ app.get('/api/notes/:id', function (req, res, next) {
 
 app.get('/api/notes', function (req, res, next) {
 	var query = req.query.query;
-	if(req.query.query){
-		db.find({'body': new RegExp(query) }, function (err, doc) {
-			if (!err && doc !== null){
+	if (req.query.query) {
+		db.find({'body': new RegExp(query, 'gi')}, function (err, doc) {
+			if (!err && doc !== null) {
 				res.json(doc);
-			} else{
+			} else {
 				res.sendStatus(404);
 			}
 		});
-	}else{
+	} else {
 		next();
 	}
 });
