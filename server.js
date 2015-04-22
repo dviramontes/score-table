@@ -25,9 +25,8 @@ app.get('/api/notes/:id', function (req, res, next) {
 
 app.get('/api/notes', function (req, res, next) {
 	var query = req.query.query;
-	console.log(query);
 	if(req.query.query){
-		db.find({'body': query }, function (err, doc) {
+		db.find({'body': new RegExp(query) }, function (err, doc) {
 			if (!err && doc !== null){
 				res.json(doc);
 			} else{
