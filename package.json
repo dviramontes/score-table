@@ -1,6 +1,7 @@
 {
   "devDependencies": {
     "browser-sync": "^1.9.0",
+    "expect.js": "^0.3.1",
     "gulp": "^3.8.10",
     "gulp-autoprefixer": "^2.0.0",
     "gulp-cached": "^1.0.1",
@@ -24,10 +25,11 @@
     "karma-mocha-reporter": "^0.3.1",
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-sinon-chai": "^0.2.0",
-    "mocha": "^2.1.0",
+    "mocha": "^2.2.4",
     "morgan": "^1.5.2",
     "rimraf": "^2.2.8",
-    "run-sequence": "^1.0.2"
+    "run-sequence": "^1.0.2",
+    "superagent": "^1.2.0"
   },
   "jspm": {
     "dependencies": {
